@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    
+    <!--SCRIPTS-->
+    <script src="jspsych/jspsych.js"></script>
+    <script src="jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/plugin-cloze.js"></script>
+    <script src="jspsych/plugin-preload.js"></script>
+    <script src="jspsych/plugin-html-button-response.js"></script>
+    <script src="jspsych/plugin-call-function.js"></script>
+
+    <script src="jokes.js"></script>
+    <!--STYLESHEETS-->
+    <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+
+  <style>
+    * {
+        max-width: 100%;
+    }
+    
+    img {
+        width: auto;
+        height: 96vh;
+        cursor: none;
+        object-fit: scale-down;
+    }
+</style>
+
+  <script>
+    
+    var jsPsych = initJsPsych({
+        use_webaudio: false,
+        on_finish: function(){
+          jsPsych.data.displayData();
+        }
+      });
+
+    var timeline = [];
+
+    var preload = {
+        type: jsPsychPreload,
+        auto_preload: true
+    }
+
+    timeline.push(preload);
+
+    var welcome = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: "Welcome to our COGS219 Class experiment, please press any button to begin!"
+    };
+
+    timeline.push(welcome);
+
+    var instructions = {
+
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: "<p>Here goes the instruction for the cloze experiment.</p>"
+    };
+
+    timeline.push(instructions);
+
+
+    var trials = {
+        type: jsPsychCloze,
+        text: jsPsych.timelineVariable('Joke'),
+        button_text: ['Next'],
+        data: {
+            joke: jsPsych.timelineVariable('Joke'),
+            Joke_ending: jsPsych.timelineVariable('Joke ending'),
+            Nonjoke_ending: jsPsych.timelineVariable('Nonjoke ending')
+        }
+    }
+
+    var test_procedure = {
+        timeline: [trials],
+        timeline_variables: test_stimuli,
+        randomize_order: true
+
+    }
+    timeline.push(test_procedure);
+
+    /*var save_server_data = {
+        type: jsPsychCallFunction,
+        func: function() {
+            var data = jsPsych.data.get().json();
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'php/save_json.php');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                filedata: data
+            }));
+        },
+        post_trial_gap: 1000
+    }
+
+    timeline.push(save_server_data);*/
+    
+    jsPsych.run(timeline);
+
+
+
+</script>
+
+
+
+</html>
